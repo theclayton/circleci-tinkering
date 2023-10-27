@@ -3,16 +3,27 @@
 version: 2.1
 
 orbs:
-  node: circleci/node@5.1.0
-
+  snyk: snyk/snyk@2.0.1
 jobs:
-  build-and-test:
+  build:
     docker:
-      - image: cimg/node:16.10
+      - image: cimg/node:lts
+    resource_class: xlarge
     steps:
       - checkout
-      - node/install-packages:
-          pkg-manager: npm
+      - run: echo "Build finished."
+
+  jest-unit-tests:
+    docker:
+      - image: cimg/node:lts
+    resource_class: xlarge
+    steps:
+      - checkout
+      - attach_workspace:
+          at: .
+      - run: 
+          name: Install node mods
+          command: npm ci
       - run:
           name: Run tests
           command: npm test
@@ -22,7 +33,18 @@ jobs:
           path: test-results
           destination: junit
 
+  snyk-sast:
+    docker:
+      - image: cimg/node:lts
+    resource_class: xlarge
+    steps:
+      - checkout
+      - run: npm ci
+      - snyk/scan
+
 workflows:
   cool-workflow:
     jobs:
-      - build-and-test
+      - build
+      - jest-unit-tests
+      - snyk-sast
