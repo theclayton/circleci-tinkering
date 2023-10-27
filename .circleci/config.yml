@@ -8,7 +8,6 @@ jobs:
   build:
     docker:
       - image: cimg/node:lts
-    resource_class: xlarge
     steps:
       - checkout
       - run: echo "Build finished."
@@ -16,7 +15,6 @@ jobs:
   jest-unit-tests:
     docker:
       - image: cimg/node:lts
-    resource_class: xlarge
     steps:
       - checkout
       - attach_workspace:
@@ -36,7 +34,6 @@ jobs:
   snyk-sast:
     docker:
       - image: cimg/node:lts
-    resource_class: xlarge
     steps:
       - checkout
       - run: npm ci
